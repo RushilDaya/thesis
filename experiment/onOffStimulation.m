@@ -1,13 +1,15 @@
-function [ output_args ] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate )
+function [ FLICKER_DISPLAY ] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies )
 % perform an on/off stimulation test
-% for simplicity we assume a constant set of frequencies (11,13,15) and
+% for simplicity we assume a constant set of only 3 frequencies
 % number of targets (9)
 
 % precompute the display sequences
 TARGETS = getTargets();
 TRIAL_SEQUENCE = getSequence(TARGETS, trialsPerFrequency);
 HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate);
-FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate);
+FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies);
+
+runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY);
 
 end
 
@@ -58,10 +60,95 @@ function [headerDisplay] = getHeaderDisplays(targets, frameRate)
      end
  end
 end
-function [flickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds)
-    % generates the sequence of flashes which will be used or each trial 
-    % this is always the same
-    % if storage is a problem rather generate this per event sequence
-    
-    flickerDisplay = 1;
+function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies)
+ % generates the sequence of flashes which will be used or each trial 
+ % this is always the same
+ % if storage is a problem rather generate this per event sequence
+ 
+ [numberOfFrequencies, numberOfTargetsPerFrequency]=size(targets);
+ FRAMES_TRIAL = frameRate*eventsPerTrial*eventLengthSeconds*numberOfTargetsPerFrequency;
+ % an event is the switching off of a single target. thus the total time to
+ % eventsPerTrial is the number of events on a single target per trial (we
+ % need to multiply by number of targets to account for the time when the
+ % target is in the ON state
+ 
+ FlickerDisplay = containers.Map;
+ 
+ for i = 1:numberOfFrequencies
+     for j = 1:numberOfTargetsPerFrequency
+         key = int2str(targets(i,j));
+         FlickerDisplay(key) = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, frameRate, eventsPerTrial, eventLengthSeconds);
+     end
+ end
 end
+function [sequence] = generateOneSequence(frequency, eventOffset,totalNumFrames, frameRate, eventsPerTrial, eventLengthSeconds)
+    %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
+    
+    frames = zeros(1,totalNumFrames);
+    for i = 1:totalNumFrames
+        frames(i) = 1/2*(1+sin( 2 * pi * frequency * ((i-1)/frameRate) ));
+    end
+    
+    controlMask = ones(1,totalNumFrames);
+    cyclePeriod = totalNumFrames/eventsPerTrial;
+    eventsPerCycle = cyclePeriod/(eventLengthSeconds*frameRate);
+    framesPerEvent = cyclePeriod/eventsPerCycle;
+    
+    eventOffset_corrected = eventOffset -1;
+    
+    for i = 1:totalNumFrames
+        periodIndex = mod(i,cyclePeriod);
+        if periodIndex >= eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
+            controlMask(i) = 0;
+        end
+    end
+    sequence = frames.*controlMask;
+end
+
+function [output_args] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay)
+    % perform the actual displaying to screen here
+    % 1. initialise the screen
+    % 2. loop over trials
+    %   2.1 print information to screen
+    %   2.1 make sure to save trial information?
+    
+AssertOpenGL;
+defaultPriority = Priority();   
+    try
+        PsychDefaultSetup(2);
+        Screen('Preference','Verbosity',0);
+        Screen('Preference','SkipSyncTests',1);
+        Screen('Preference','VisualDebugLevel',0);
+        
+        screenNumber = max(Screen('Screens'));
+        [window, screenRect]=Screen('OpenWindow', screenNumber,0);
+        
+        %% the code for running the stimulator goes here
+        
+    catch
+        Screen('CloseAll');
+        psychrethrow(psychlasterror);
+    end
+    
+    Priority(defaultPriority);
+    ShowCursor();
+    Screen( 'CloseAll' );
+    
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
