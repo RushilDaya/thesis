@@ -53,8 +53,8 @@ function [headerDisplay] = getHeaderDisplays(targets, frameRate)
          framesGuide = frameRate*SECONDS_GUIDE; 
          framesPause = frameRate*SECONDS_PAUSE;
          
-         targetPatterns = zeros(numberOfFrequencies,numberOfTargetsPerFrequency, framesGuide+framesPause);
-         targetPatterns(i,j,1:framesGuide) = ones(1,1,framesGuide);
+         targetPatterns = ones(numberOfFrequencies,numberOfTargetsPerFrequency, framesGuide+framesPause);
+         targetPatterns(i,j,1:framesGuide) = zeros(1,1,framesGuide);
          headerDisplay(key) = targetPatterns;
      end
  end
@@ -80,6 +80,7 @@ function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTri
      end
  end
 end
+
 function [sequence] = generateOneSequence(frequency, eventOffset,totalNumFrames, frameRate, eventsPerTrial, eventLengthSeconds)
     %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
     
@@ -88,7 +89,7 @@ function [sequence] = generateOneSequence(frequency, eventOffset,totalNumFrames,
         frames(i) = 1/2*(1+sin( 2 * pi * frequency * ((i-1)/frameRate) ));
     end
     
-    controlMask = ones(1,totalNumFrames);
+    controlMask = zeros(1,totalNumFrames);
     cyclePeriod = totalNumFrames/eventsPerTrial;
     eventsPerCycle = cyclePeriod/(eventLengthSeconds*frameRate);
     framesPerEvent = cyclePeriod/eventsPerCycle;
@@ -98,10 +99,18 @@ function [sequence] = generateOneSequence(frequency, eventOffset,totalNumFrames,
     for i = 1:totalNumFrames
         periodIndex = mod(i,cyclePeriod);
         if periodIndex >= eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
-            controlMask(i) = 0;
+            controlMask(i) = 1; % when the control mask ==1 we are in the event (off)
         end
     end
-    sequence = frames.*controlMask;
+    
+    sequence = zeros(1,totalNumFrames);
+    for i = 1:totalNumFrames
+        if controlMask(i)==1
+            sequence(i) = 1;
+        else
+            sequence(i)=frames(i);
+        end
+    end
 end
 
 function [output_args] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay)
@@ -187,7 +196,8 @@ defaultPriority = Priority();
                 headerFrame = headerOfInterest(:,:,frameIdx);
                 allColors = 255*ones(3,numFrequencies*targetsPerFrequency);
                 flatHeader = reshape(headerFrame',[1,numFrequencies*targetsPerFrequency]);
-                allColors(1,:) = allColors(1,:).*(flatHeader);
+                allColors(2,:) = allColors(2,:).*(flatHeader);
+                allColors(3,:) = allColors(3,:).*(flatHeader);
                 Screen('FillRect', window, allColors, allStimulators);
                 vbl=Screen('Flip',window,vbl+ifi);
             end
@@ -214,25 +224,11 @@ defaultPriority = Priority();
                 vbl=Screen('Flip',window,vbl+0.9*ifi);
             end
             datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
-            
+           
+           Screen('Flip',window);
            KbStrokeWait;
             
         end
-        
-        
-%         Screen('FillRect',window, allColors, allStimulators);
-%         Screen('Flip',window);
-%         KbStrokeWait;
-        
-      
-        
-        % actual stimulation
-%         for trialIdx = 1:length(trialSequence)
-%             % display Header
-%             structKey = int2str(trialSequence(trialIdx));
-%             
-%         end
-     
         
         
     catch
@@ -249,7 +245,8 @@ end
 
 
 
-
+% issue with synchronisation?? how to solve this?
+% how to keep sychronise the recording with the stimulation?
 
 
 
