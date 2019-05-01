@@ -1,14 +1,29 @@
-function [ FLICKER_DISPLAY ] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies )
+function [details] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies )
 % perform an on/off stimulation test
 % for simplicity we assume a constant set of only 3 frequencies
 % number of targets (9)
 
+
+details = containers.Map;
+details('frequencies')=frequencies;
+details('frameRate')=frameRate;
+details('eventsPerTrial')=eventsPerTrial;
+details('eventLengthSeconds')=eventLengthSeconds;
+details('trialsPerFrequency')=trialsPerFrequency;
+details('experimentType')='ON OFF STIMULATION';
+
 % precompute the display sequences
 TARGETS = getTargets();
+details('targets')=TARGETS;
 TRIAL_SEQUENCE = getSequence(TARGETS, trialsPerFrequency);
+details('trialSequence')=TRIAL_SEQUENCE;
 HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate);
-FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies);
-runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY);
+PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
+details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
+FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS);
+
+timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY);
+details('timingData')=timingData;
 
 end
 
@@ -59,13 +74,14 @@ function [headerDisplay] = getHeaderDisplays(targets, frameRate)
      end
  end
 end
-function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies)
+function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)
  % generates the sequence of flashes which will be used or each trial 
  % this is always the same
  % if storage is a problem rather generate this per event sequence
  
  [numberOfFrequencies, numberOfTargetsPerFrequency]=size(targets);
  FRAMES_TRIAL = frameRate*eventsPerTrial*eventLengthSeconds*numberOfTargetsPerFrequency;
+ FRAMES_PRETRIAL = frameRate*preTrialFlickerSeconds;
  % an event is the switching off of a single target. thus the total time to
  % eventsPerTrial is the number of events on a single target per trial (we
  % need to multiply by number of targets to account for the time when the
@@ -76,13 +92,15 @@ function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTri
  for i = 1:numberOfFrequencies
      for j = 1:numberOfTargetsPerFrequency
          key = int2str(targets(i,j));
-         FlickerDisplay(key) = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, frameRate, eventsPerTrial, eventLengthSeconds);
+         FlickerDisplay(key) = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds);
      end
  end
 end
 
-function [sequence] = generateOneSequence(frequency, eventOffset,totalNumFrames, frameRate, eventsPerTrial, eventLengthSeconds)
+function [sequence] = generateOneSequence(frequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
     %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
+    
+    totalNumFrames = framesTrial + framesPreTrial;
     
     frames = zeros(1,totalNumFrames);
     for i = 1:totalNumFrames
@@ -90,14 +108,14 @@ function [sequence] = generateOneSequence(frequency, eventOffset,totalNumFrames,
     end
     
     controlMask = zeros(1,totalNumFrames);
-    cyclePeriod = totalNumFrames/eventsPerTrial;
+    cyclePeriod = framesTrial/eventsPerTrial;
     eventsPerCycle = cyclePeriod/(eventLengthSeconds*frameRate);
     framesPerEvent = cyclePeriod/eventsPerCycle;
     
     eventOffset_corrected = eventOffset -1;
     
-    for i = 1:totalNumFrames
-        periodIndex = mod(i,cyclePeriod);
+    for i = framesPreTrial:totalNumFrames
+        periodIndex = mod(i-framesPreTrial,cyclePeriod);
         if periodIndex >= eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
             controlMask(i) = 1; % when the control mask ==1 we are in the event (off)
         end
@@ -111,14 +129,19 @@ function [sequence] = generateOneSequence(frequency, eventOffset,totalNumFrames,
             sequence(i)=frames(i);
         end
     end
+    plot(sequence);
 end
 
-function [output_args] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay)
+function [timingData] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay)
     % perform the actual displaying to screen here
     % 1. initialise the screen
     % 2. loop over trials
     %   2.1 print information to screen
     %   2.1 make sure to save trial information?
+    
+    timingData = zeros(length(trialSequence),3);
+    timingData(:,1)=trialSequence;
+    
     
 AssertOpenGL;
 defaultPriority = Priority();   
@@ -208,8 +231,12 @@ defaultPriority = Priority();
             
             
             %TODO how to get the timing correct?
+             
             
-            datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
+            timingData(trialIdx,2)= string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'));
+            % note trail begins with a period (one event long) where all
+            % targets are flashed - must account for this in the recording
+            
             for frameIdx = 1:flickerFrames
                 allColors = 255*ones(3,numFrequencies*targetsPerFrequency);
                 for i = 1:numFrequencies
@@ -223,7 +250,7 @@ defaultPriority = Priority();
                 Screen('FillRect', window, allColors, allStimulators);
                 vbl=Screen('Flip',window,vbl+0.9*ifi);
             end
-            datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
+            timingData(trialIdx,3)=  string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'));
            
            Screen('Flip',window);
            KbStrokeWait;
