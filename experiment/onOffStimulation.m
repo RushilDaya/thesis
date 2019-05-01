@@ -168,19 +168,61 @@ defaultPriority = Priority();
             end
         end
         
-        allColors = [255 255 255;
-                     255 1 1;
-                     1 255 1;
-                     230 1 1;
-                     1 1 255;
-                     1 1 255;
-                     1 255 1;
-                     1 255 1;
-                     1 255 255
-        ]';
-        Screen('FillRect',window, allColors, allStimulators);
-        Screen('Flip',window);
-        KbStrokeWait;
+        headerPartTemp = headerDisplay(int2str(targets(1,1)));
+        headerPartLength = length(headerPartTemp(1,1,:))
+        flickerFrames = length(flickerDisplay('11'));
+        
+        ifi = Screen('GetFlipInterval', window);
+
+        
+        for trialIdx = 1:length(trialSequence)
+            % show header part
+            headerOfInterest = headerDisplay(int2str(trialSequence(trialIdx)));
+            trialSequence(trialIdx);
+           
+            vbl = Screen('Flip', window);
+            
+            %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
+            for frameIdx = 1:headerPartLength
+                headerFrame = headerOfInterest(:,:,frameIdx);
+                allColors = 255*ones(3,numFrequencies*targetsPerFrequency);
+                flatHeader = reshape(headerFrame',[1,numFrequencies*targetsPerFrequency]);
+                allColors(1,:) = allColors(1,:).*(flatHeader);
+                Screen('FillRect', window, allColors, allStimulators);
+                vbl=Screen('Flip',window,vbl+ifi);
+            end
+            %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
+            
+            
+            % show trial part
+            
+            
+            %TODO how to get the timing correct?
+            
+            datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
+            for frameIdx = 1:flickerFrames
+                allColors = 255*ones(3,numFrequencies*targetsPerFrequency);
+                for i = 1:numFrequencies
+                    for j = 1:targetsPerFrequency
+                        key = int2str(targets(i,j));
+                        sequence = flickerDisplay(key);
+                        frameValue = sequence(frameIdx);
+                        allColors(:,(i-1)*targetsPerFrequency+j) = frameValue*allColors(:,(i-1)*targetsPerFrequency+j );
+                    end
+                end
+                Screen('FillRect', window, allColors, allStimulators);
+                vbl=Screen('Flip',window,vbl+0.9*ifi);
+            end
+            datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
+            
+           KbStrokeWait;
+            
+        end
+        
+        
+%         Screen('FillRect',window, allColors, allStimulators);
+%         Screen('Flip',window);
+%         KbStrokeWait;
         
       
         
