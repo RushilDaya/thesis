@@ -137,8 +137,7 @@ function [timingData] = runProcess(targets, trialSequence, headerDisplay, flicke
     %   2.1 print information to screen
     %   2.1 make sure to save trial information?
     
-    timingData = zeros(length(trialSequence),3);
-    timingData(:,1)=trialSequence;
+    timingData = cell(length(trialSequence),2);
     
     
 AssertOpenGL;
@@ -231,7 +230,7 @@ defaultPriority = Priority();
             %TODO how to get the timing correct?
              
             
-            timingData(trialIdx,2)= string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'));
+            timingData(trialIdx,1)= {string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'))};
             % note trail begins with a period (one event long) where all
             % targets are flashed - must account for this in the recording
             
@@ -248,7 +247,7 @@ defaultPriority = Priority();
                 Screen('FillRect', window, allColors, allStimulators);
                 vbl=Screen('Flip',window,vbl+0.9*ifi);
             end
-            timingData(trialIdx,3)=  string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'));
+            timingData(trialIdx,2)=  {string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'))};
            
            Screen('Flip',window);
            KbStrokeWait;

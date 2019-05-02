@@ -1,26 +1,22 @@
-function [details] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies )
-% perform an on/off stimulation test
-% for simplicity we assume a constant set of only 3 frequencies
-% number of targets (9)
+function [ details ] = training(frameRate, frequencies, trainingSeconds)
+%performs a round of training at each of the target frequencies.
+% details logs metainformation and importantly timestamps of the start and
+% end time of each training
 
 
 details = containers.Map;
 details('frequencies')=frequencies;
 details('frameRate')=frameRate;
-details('eventsPerTrial')=eventsPerTrial;
-details('eventLengthSeconds')=eventLengthSeconds;
-details('trialsPerFrequency')=trialsPerFrequency;
-details('experimentType')='ON OFF STIMULATION';
+details('secondsPerFrequency')=trainingSeconds;
+details('experimentType')='TRAINING';
 
 % precompute the display sequences
 TARGETS = getTargets();
 details('targets')=TARGETS;
-TRIAL_SEQUENCE = getSequence(TARGETS, trialsPerFrequency);
+TRIAL_SEQUENCE = getSequence(TARGETS, 1);
 details('trialSequence')=TRIAL_SEQUENCE;
 HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate);
-PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
-details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
-FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS);
+FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, 1, trainingSeconds ,frequencies, 0);
 
 timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY);
 details('timingData')=timingData;
@@ -30,9 +26,9 @@ end
 
 function [targets] = getTargets()
 % each row is a frequency (11,13,15) each column is a target at that frequency
-    targets = [11, 12, 13;
-               21, 22, 23;
-               31, 32, 33];
+    targets = [11;
+               21;
+               31];
 end
 function [trialSequence] = getSequence(targets, trialsPerFrequency)
     % generates the exicitation sequence which will be followed
@@ -107,29 +103,7 @@ function [sequence] = generateOneSequence(frequency, eventOffset,framesTrial,fra
         frames(i) = 1/2*(1+sin( 2 * pi * frequency * ((i-1)/frameRate) ));
     end
     
-    controlMask = zeros(1,totalNumFrames);
-    cyclePeriod = framesTrial/eventsPerTrial;
-    eventsPerCycle = cyclePeriod/(eventLengthSeconds*frameRate);
-    framesPerEvent = cyclePeriod/eventsPerCycle;
-    
-    eventOffset_corrected = eventOffset -1;
-    
-    for i = framesPreTrial:totalNumFrames
-        periodIndex = mod(i-framesPreTrial,cyclePeriod);
-        if periodIndex >= eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
-            controlMask(i) = 1; % when the control mask ==1 we are in the event (off)
-        end
-    end
-    
-    sequence = zeros(1,totalNumFrames);
-    for i = 1:totalNumFrames
-        if controlMask(i)==1
-            sequence(i) = 1;
-        else
-            sequence(i)=frames(i);
-        end
-    end
-    plot(sequence);
+    sequence = frames;
 end
 
 function [timingData] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay)
@@ -266,22 +240,7 @@ defaultPriority = Priority();
     ShowCursor();
     Screen( 'CloseAll' );
     
+
+
 end
-
-
-
-
-% issue with synchronisation?? how to solve this?
-% how to keep sychronise the recording with the stimulation?
-
-
-
-
-
-
-
-
-
-
-
 
