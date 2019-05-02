@@ -1,5 +1,5 @@
-function [ details ] = phaseReversalStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies )
-%UNTITLED Summary of this function goes here
+function [ details ] = frequencySwitchStimulation(  trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies)
+%UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
 details = containers.Map;
@@ -8,7 +8,7 @@ details('frameRate')=frameRate;
 details('eventsPerTrial')=eventsPerTrial;
 details('eventLengthSeconds')=eventLengthSeconds;
 details('trialsPerFrequency')=trialsPerFrequency;
-details('experimentType')='PHASE REVERSAL STIMULATION';
+details('experimentType')='FREQUENCY SWITCHING STIMULATION';
 
 % precompute the display sequences
 TARGETS = getTargets();
@@ -90,19 +90,22 @@ function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTri
  for i = 1:numberOfFrequencies
      for j = 1:numberOfTargetsPerFrequency
          key = int2str(targets(i,j));
-         FlickerDisplay(key) = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds);
+         iNext = mod(i,numberOfFrequencies)+1;
+         FlickerDisplay(key) = generateOneSequence(frequencies(i),frequencies(iNext),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds);
      end
  end
 end
 
-function [sequence] = generateOneSequence(frequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
+function [sequence] = generateOneSequence(frequency, eventFrequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
     %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
     
     totalNumFrames = framesTrial + framesPreTrial;
     
     frames = zeros(1,totalNumFrames);
+    framesEvent = zeros(1,totalNumFrames);
     for i = 1:totalNumFrames
         frames(i) = 1/2*(1+sin( 2 * pi * frequency * ((i-1)/frameRate) ));
+        framesEvent(i) = 1/2*(1+sin( 2 * pi * eventFrequency * ((i-1)/frameRate) ));
     end
     
     controlMask = zeros(1,totalNumFrames);
@@ -118,11 +121,11 @@ function [sequence] = generateOneSequence(frequency, eventOffset,framesTrial,fra
             controlMask(i) = 1; % when the control mask ==1 we are in the event (off)
         end
     end
-    
+    %%% todo lets do frequency switching
     sequence = zeros(1,totalNumFrames);
     for i = 1:totalNumFrames
         if controlMask(i)==1
-            sequence(i) = 1-frames(i);
+            sequence(i) = framesEvent(i);
         else
             sequence(i)=frames(i);
         end
@@ -264,6 +267,7 @@ defaultPriority = Priority();
     Priority(defaultPriority);
     ShowCursor();
     Screen( 'CloseAll' );
+
 
 end
 
