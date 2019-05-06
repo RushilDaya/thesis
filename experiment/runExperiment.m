@@ -27,3 +27,4 @@ elseif strcmp(METHOD, 'TRAINING')
 end  
 
 saveDetails(details,USER_NAME, METHOD);       
+   

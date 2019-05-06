@@ -19,35 +19,11 @@ details('trialSequence')=TRIAL_SEQUENCE;
 HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate,1,1);
 PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
 details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
-[FLICKER_DISPLAY,FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS);
+[FLICKER_DISPLAY,FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS, @generateOneSequence);
 
 timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY, FLICKER_EVENT_MARKERS);
 details('timingData')=timingData;
 
-end
-
-function [FlickerDisplay,FlickerEvents] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)
- % generates the sequence of flashes which will be used or each trial 
- % this is always the same
- % if storage is a problem rather generate this per event sequence
- 
- [numberOfFrequencies, numberOfTargetsPerFrequency]=size(targets);
- FRAMES_TRIAL = frameRate*eventsPerTrial*eventLengthSeconds*numberOfTargetsPerFrequency;
- FRAMES_PRETRIAL = frameRate*preTrialFlickerSeconds;
- % an event is the switching off of a single target. thus the total time to
- % eventsPerTrial is the number of events on a single target per trial (we
- % need to multiply by number of targets to account for the time when the
- % target is in the ON state
- 
- FlickerDisplay = containers.Map;
- FlickerEvents = containers.Map;
- 
- for i = 1:numberOfFrequencies
-     for j = 1:numberOfTargetsPerFrequency
-         key = int2str(targets(i,j));
-         [FlickerDisplay(key),FlickerEvents(key)] = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds);
-     end
- end
 end
 
 function [sequence, sequenceEvents] = generateOneSequence(frequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
