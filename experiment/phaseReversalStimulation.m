@@ -160,9 +160,6 @@ defaultPriority = Priority();
         headerPartLength = length(headerPartTemp(1,1,:))
         flickerFrames = length(flickerDisplay('11'));
         
-        ifi = Screen('GetFlipInterval', window);
-
-        
         for trialIdx = 1:length(trialSequence)
             % show header part
             headerOfInterest = headerDisplay(int2str(trialSequence(trialIdx)));
@@ -183,7 +180,7 @@ defaultPriority = Priority();
                     marker = trialSequence(trialIdx);
                     Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
                 end
-                vbl=Screen('Flip',window,vbl+ifi);
+                vbl=Screen('Flip',window);
             end
             %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
             
@@ -217,7 +214,7 @@ defaultPriority = Priority();
                     marker = trialEventMarkers(frameIdx);
                     Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
                end
-                vbl=Screen('Flip',window,vbl+0.9*ifi);
+                vbl=Screen('Flip',window);
             end
             timingData(trialIdx,2)=  {string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'))};
            

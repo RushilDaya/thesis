@@ -186,7 +186,7 @@ defaultPriority = Priority();
                     marker = trialSequence(trialIdx);
                     Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
                 end                
-                vbl=Screen('Flip',window,vbl+ifi);
+                vbl=Screen('Flip',window);
             end
             %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
             
@@ -220,7 +220,7 @@ defaultPriority = Priority();
                     marker = trialEventMarkers(frameIdx);
                     Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
                 end
-                vbl=Screen('Flip',window,vbl+0.9*ifi);
+                vbl=Screen('Flip',window);
             end
             timingData(trialIdx,2)=  {string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'))};
            

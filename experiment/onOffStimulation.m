@@ -162,8 +162,6 @@ defaultPriority = Priority();
         headerPartTemp = headerDisplay(int2str(targets(1,1)));
         headerPartLength = length(headerPartTemp(1,1,:))
         flickerFrames = length(flickerDisplay('11'));
-        
-        ifi = Screen('GetFlipInterval', window);
 
         
         for trialIdx = 1:length(trialSequence)
