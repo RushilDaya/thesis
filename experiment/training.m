@@ -15,7 +15,7 @@ TARGETS = getTargets();
 details('targets')=TARGETS;
 TRIAL_SEQUENCE = getSequence(TARGETS, 1);
 details('trialSequence')=TRIAL_SEQUENCE;
-HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate);
+HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate,1,1);
 FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, 1, trainingSeconds ,frequencies, 0);
 
 timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY);
@@ -30,46 +30,7 @@ function [targets] = getTargets()
                21;
                31];
 end
-function [trialSequence] = getSequence(targets, trialsPerFrequency)
-    % generates the exicitation sequence which will be followed
-    % aim to make excitations random
-    % but still cover all frequencies in equal measure
-    targetArraySize = size(targets);
-    numFrequencies = targetArraySize(1);
-    numTargetsPerFrequency = targetArraySize(2);
-    
-    randomIndices = zeros(numFrequencies, trialsPerFrequency);
-    for i = 1:numFrequencies
-        randomIndices(i,:)= 10*i + randi([1 numTargetsPerFrequency],1,trialsPerFrequency);
-    end
-    randomIndices = reshape(randomIndices,[1,numFrequencies*trialsPerFrequency]);
-    trialSequence = randomIndices(randperm(numel(randomIndices)));
-    
-    
-end
-function [headerDisplay] = getHeaderDisplays(targets, frameRate)
-% the headerDisplay is a structure which provides the frame by frame
-% sequence to be displayed in the header(target identification and pause)
-% for each possible trial option
 
- SECONDS_GUIDE = 1; % how long is the intended target shown
- SECONDS_PAUSE = 1; % how long is the pause before SSVEP flashing
-
- headerDisplay = containers.Map;
- [numberOfFrequencies,numberOfTargetsPerFrequency]=size(targets);
- for i = 1:numberOfFrequencies
-     for j = 1:numberOfTargetsPerFrequency
-         key = int2str(targets(i,j));
-         
-         framesGuide = frameRate*SECONDS_GUIDE; 
-         framesPause = frameRate*SECONDS_PAUSE;
-         
-         targetPatterns = ones(numberOfFrequencies,numberOfTargetsPerFrequency, framesGuide+framesPause);
-         targetPatterns(i,j,1:framesGuide) = zeros(1,1,framesGuide);
-         headerDisplay(key) = targetPatterns;
-     end
- end
-end
 function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)
  % generates the sequence of flashes which will be used or each trial 
  % this is always the same
