@@ -15,7 +15,7 @@ function [ FlickerDisplay, FlickerEvents ] = getFlickerDisplays(targets, frameRa
  for i = 1:numberOfFrequencies
      for j = 1:numberOfTargetsPerFrequency
          key = int2str(targets(i,j));
-         [FlickerDisplay(key),FlickerEvents(key)] = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds);
+         [FlickerDisplay(key),FlickerEvents(key)] = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds, frequencies);
      end
  end
 

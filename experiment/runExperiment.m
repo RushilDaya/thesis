@@ -1,14 +1,14 @@
 %% user name
 
     USER_NAME = 'SUBJECT1';
-    METHOD    = 'TRAINING'; % [ONOFF, PHASESWITCH, FREQUENCYSWITCH ]
+    METHOD    = 'FREQUENCYSWITCH'; % [ONOFF, PHASESWITCH, FREQUENCYSWITCH ]
 
 %% define the experimental constants
 
-TRIALS_PER_FREQUENCY = 1;
+TRIALS_PER_FREQUENCY = 10;
 EVENTS_PER_TRIAL = 5;
 EVENT_LENGTH_SECONDS = 1; 
-FRAME_RATE = 120 ;
+FRAME_RATE = 120;
 FREQUENCIES = [11, 13, 15]; 
 TARGETS = [11,12,13;21,22,23;31,32,33];
 TRAINING_TARGETS = [11;21;31];
@@ -32,4 +32,4 @@ elseif strcmp(METHOD, 'TRAINING')
 end  
 
 saveDetails(details,USER_NAME, METHOD);       
-                 
+                         

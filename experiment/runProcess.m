@@ -1,4 +1,4 @@
-function [ timingData ] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay, eventMarkers, frequencies)
+function [ timingData ] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay, eventMarkers, frequencies, processStartMarker)
 
     % perform the actual displaying to screen here
     % 1. initialise the screen
@@ -23,6 +23,9 @@ function [ timingData ] = runProcess(targets, trialSequence, headerDisplay, flic
         headerPartLength = length(headerPartTemp(1,1,:));
         flickerFrames = length(flickerDisplay('11'));
 
+        Screen('FillRect', window, processStartMarker, [0,0,1,1]);
+        Screen('Flip', window);
+        KbStrokeWait;
         
         for trialIdx = 1:length(trialSequence)
             % show header part

@@ -21,15 +21,22 @@ PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
 details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
 [FLICKER_DISPLAY,FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS, @generateOneSequence);
 
-timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY,FLICKER_EVENT_MARKERS, frequencies);
+processStartMarker = 4;
+timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY,FLICKER_EVENT_MARKERS, frequencies, processStartMarker);
 details('timingData')=timingData;
 
 end
 
-function [sequence, sequenceEvents] = generateOneSequence(frequency, eventFrequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
+function [sequence, sequenceEvents] = generateOneSequence(frequency,eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds, frequencies)
     %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
     
     totalNumFrames = framesTrial + framesPreTrial;
+    
+    % determine the event frequency ( as the next frequency )
+    currIdx = frequencies(frequencies == frequency);
+    eventIdx = mod(currIdx, length(frequencies))+1;
+    eventFrequency = frequencies(eventIdx);
+    
     
     frames = zeros(1,totalNumFrames);
     framesEvent = zeros(1,totalNumFrames);
