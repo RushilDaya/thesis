@@ -183,8 +183,7 @@ defaultPriority = Priority();
         for trialIdx = 1:length(trialSequence)
             % show header part
             headerOfInterest = headerDisplay(int2str(trialSequence(trialIdx)));
-            trialSequence(trialIdx);
-           
+            trialSequence(trialIdx);    
             vbl = Screen('Flip', window);
             
             %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
@@ -195,7 +194,11 @@ defaultPriority = Priority();
                 allColors(2,:) = allColors(2,:).*(flatHeader);
                 allColors(3,:) = allColors(3,:).*(flatHeader);
                 Screen('FillRect', window, allColors, allStimulators);
-                vbl=Screen('Flip',window,vbl+ifi);
+                if frameIdx == 1
+                    marker = trialSequence(trialIdx);
+                    Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
+                end
+                vbl=Screen('Flip',window);
             end
             %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
             
@@ -221,10 +224,15 @@ defaultPriority = Priority();
                     end
                 end
                 Screen('FillRect', window, allColors, allStimulators);
-                vbl=Screen('Flip',window,vbl+0.9*ifi);
+                if frameIdx == 1
+                    marker = 100; % marker of 100 is when flashing starts (trial begining)
+                    Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
+                end
+                vbl=Screen('Flip',window);
             end
             timingData(trialIdx,2)=  {string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'))};
-           
+           marker = 101; % marker 101 is when the flashing ends (trial complete)
+           Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
            Screen('Flip',window);
            KbStrokeWait;
             

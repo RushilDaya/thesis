@@ -18,9 +18,9 @@ details('trialSequence')=TRIAL_SEQUENCE;
 HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate);
 PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
 details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
-FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS);
+[FLICKER_DISPLAY, FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS);
 
-timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY);
+timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY, FLICKER_EVENT_MARKERS);
 details('timingData')=timingData;
 
 end
@@ -72,7 +72,7 @@ function [headerDisplay] = getHeaderDisplays(targets, frameRate)
      end
  end
 end
-function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)
+function [FlickerDisplay, FlickerEvents] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)
  % generates the sequence of flashes which will be used or each trial 
  % this is always the same
  % if storage is a problem rather generate this per event sequence
@@ -86,16 +86,17 @@ function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTri
  % target is in the ON state
  
  FlickerDisplay = containers.Map;
+ FlickerEvents = containers.Map;
  
  for i = 1:numberOfFrequencies
      for j = 1:numberOfTargetsPerFrequency
          key = int2str(targets(i,j));
-         FlickerDisplay(key) = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds);
+         [FlickerDisplay(key),FlickerEvents(key)] = generateOneSequence(frequencies(i),j,FRAMES_TRIAL, FRAMES_PRETRIAL ,frameRate, eventsPerTrial, eventLengthSeconds);
      end
  end
 end
 
-function [sequence] = generateOneSequence(frequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
+function [sequence, sequenceEvents] = generateOneSequence(frequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
     %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
     
     totalNumFrames = framesTrial + framesPreTrial;
@@ -120,17 +121,24 @@ function [sequence] = generateOneSequence(frequency, eventOffset,framesTrial,fra
     end
     
     sequence = zeros(1,totalNumFrames);
-    for i = 1:totalNumFrames
+    sequenceEvents = zeros(1,totalNumFrames);
+    for i = 2:totalNumFrames
         if controlMask(i)==1
+            if controlMask(i-1)==0
+                sequenceEvents(i) = 103; % 103 is the start of an event
+            end
             sequence(i) = 1-frames(i);
         else
+            if controlMask(i-1)==1
+                sequenceEvents(i) = 104; % 104 is the end of an event
+            end            
             sequence(i)=frames(i);
         end
     end
-    plot(sequence);
+    %plot(sequence);
 end
 
-function [timingData] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay)
+function [timingData] = runProcess(targets, trialSequence, headerDisplay, flickerDisplay, eventMarkers)
     % perform the actual displaying to screen here
     % 1. initialise the screen
     % 2. loop over trials
@@ -208,7 +216,8 @@ defaultPriority = Priority();
             % show header part
             headerOfInterest = headerDisplay(int2str(trialSequence(trialIdx)));
             trialSequence(trialIdx);
-           
+            trialEventMarkers = eventMarkers(int2str(trialSequence(trialIdx)));
+            
             vbl = Screen('Flip', window);
             
             %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
@@ -219,6 +228,10 @@ defaultPriority = Priority();
                 allColors(2,:) = allColors(2,:).*(flatHeader);
                 allColors(3,:) = allColors(3,:).*(flatHeader);
                 Screen('FillRect', window, allColors, allStimulators);
+                if frameIdx == 1
+                    marker = trialSequence(trialIdx);
+                    Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
+                end
                 vbl=Screen('Flip',window,vbl+ifi);
             end
             %datestr(now,'dd-mm-yyyy HH:MM:SS FFF')
@@ -245,10 +258,20 @@ defaultPriority = Priority();
                     end
                 end
                 Screen('FillRect', window, allColors, allStimulators);
+               if frameIdx == 1
+                    marker = 100; % 100 is when the actual flashing begins
+                    Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
+               end  
+               if trialEventMarkers(frameIdx) ~=0
+                    marker = trialEventMarkers(frameIdx);
+                    Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
+               end
                 vbl=Screen('Flip',window,vbl+0.9*ifi);
             end
             timingData(trialIdx,2)=  {string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'))};
            
+           marker = 101; % 101 is when the trial ends
+           Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
            Screen('Flip',window);
            KbStrokeWait;
             
