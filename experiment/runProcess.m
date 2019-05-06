@@ -42,7 +42,7 @@ function [ timingData ] = runProcess(targets, trialSequence, headerDisplay, flic
                 Screen('FillRect', window, allColors, allStimulators);
                 if frameIdx == 1
                     target = trialSequence(trialIdx);
-                    frequencyMarker = getFrequencyFromTarget(target,targets,frequencies)
+                    frequencyMarker = getFrequencyFromTarget(target,targets,frequencies);
                     Screen('FillRect', window, getVPixxMarkerColor(frequencyMarker), [0,0,1,1]);
                 end
                 vbl=Screen('Flip',window);
@@ -72,11 +72,11 @@ function [ timingData ] = runProcess(targets, trialSequence, headerDisplay, flic
                 end
                 Screen('FillRect', window, allColors, allStimulators);
                 if frameIdx == 1
-                    marker = 100 % 100 is when the actual flashing begins
+                    marker = 100; % 100 is when the actual flashing begins
                     Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
                 end
                 if trialEventMarkers(frameIdx) ~=0
-                    marker = trialEventMarkers(frameIdx)
+                    marker = trialEventMarkers(frameIdx);
                     Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
                 end
                 
@@ -84,7 +84,7 @@ function [ timingData ] = runProcess(targets, trialSequence, headerDisplay, flic
             end
             timingData(trialIdx,2)=  {string(datestr(now,'dd-mm-yyyy HH:MM:SS FFF'))};
            
-           marker = 101 % 101 is when the trial ends
+           marker = 101; % 101 is when the trial ends
            Screen('FillRect', window, getVPixxMarkerColor(marker), [0,0,1,1]);
            Screen('Flip',window);
            KbStrokeWait;

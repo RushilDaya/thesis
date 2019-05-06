@@ -1,4 +1,4 @@
-function [ details ] = frequencySwitchStimulation(  trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies, TARGETS)
+function [ details ] = frequencySwitchStimulation(  trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies, TARGETS, headerDisplaySeconds, headerPauseSeconds)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -8,13 +8,15 @@ details('frameRate')=frameRate;
 details('eventsPerTrial')=eventsPerTrial;
 details('eventLengthSeconds')=eventLengthSeconds;
 details('trialsPerFrequency')=trialsPerFrequency;
+details('headerDisplaySeconds')=headerDisplaySeconds;
+details('headerPauseSeconds')=headerPauseSeconds;
 details('experimentType')='FREQUENCY SWITCHING STIMULATION';
 
 % precompute the display sequences
 details('targets')=TARGETS;
 TRIAL_SEQUENCE = getSequence(TARGETS, trialsPerFrequency);
 details('trialSequence')=TRIAL_SEQUENCE;
-HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate,1,1);
+HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate, headerDisplaySeconds, headerPauseSeconds);
 PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
 details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
 [FLICKER_DISPLAY,FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS, @generateOneSequence);

@@ -1,4 +1,4 @@
-function [details] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies, TARGETS )
+function [details] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies, TARGETS , headerDisplaySeconds, headerPauseSeconds)
 % perform an on/off stimulation test
 % for simplicity we assume a constant set of only 3 frequencies
 % number of targets (9)
@@ -10,13 +10,15 @@ details('frameRate')=frameRate;
 details('eventsPerTrial')=eventsPerTrial;
 details('eventLengthSeconds')=eventLengthSeconds;
 details('trialsPerFrequency')=trialsPerFrequency;
+details('headerDisplaySeconds')=headerDisplaySeconds;
+details('headerPauseSeconds')=headerPauseSeconds;
 details('experimentType')='ON OFF STIMULATION';
 
 % precompute the display sequences
 details('targets')=TARGETS;
 TRIAL_SEQUENCE = getSequence(TARGETS, trialsPerFrequency);
 details('trialSequence')=TRIAL_SEQUENCE;
-HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate,1,1);
+HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate,headerDisplaySeconds,headerPauseSeconds);
 PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
 details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
 [FLICKER_DISPLAY,FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS, @generateOneSequence);
