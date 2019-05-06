@@ -1,7 +1,7 @@
 %% user name
 
     USER_NAME = 'SUBJECT1';
-    METHOD    = 'PHASESWITCH'; % [ONOFF, PHASESWITCH, FREQUENCYSWITCH ]
+    METHOD    = 'TRAINING'; % [ONOFF, PHASESWITCH, FREQUENCYSWITCH ]
 
 %% define the experimental constants
 
