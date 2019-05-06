@@ -1,4 +1,4 @@
-function [details] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies )
+function [details] = onOffStimulation( trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies, TARGETS )
 % perform an on/off stimulation test
 % for simplicity we assume a constant set of only 3 frequencies
 % number of targets (9)
@@ -13,7 +13,6 @@ details('trialsPerFrequency')=trialsPerFrequency;
 details('experimentType')='ON OFF STIMULATION';
 
 % precompute the display sequences
-TARGETS = getTargets();
 details('targets')=TARGETS;
 TRIAL_SEQUENCE = getSequence(TARGETS, trialsPerFrequency);
 details('trialSequence')=TRIAL_SEQUENCE;
@@ -25,14 +24,6 @@ details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
 timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY, FLICKER_EVENT_MARKERS);
 details('timingData')=timingData;
 
-end
-
-
-function [targets] = getTargets()
-% each row is a frequency (11,13,15) each column is a target at that frequency
-    targets = [11, 12, 13;
-               21, 22, 23;
-               31, 32, 33];
 end
 
 function [FlickerDisplay,FlickerEvents] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)

@@ -1,4 +1,4 @@
-function [ details ] = training(frameRate, frequencies, trainingSeconds)
+function [ details ] = training(frameRate, frequencies, trainingSeconds, TARGETS)
 %performs a round of training at each of the target frequencies.
 % details logs metainformation and importantly timestamps of the start and
 % end time of each training
@@ -11,7 +11,6 @@ details('secondsPerFrequency')=trainingSeconds;
 details('experimentType')='TRAINING';
 
 % precompute the display sequences
-TARGETS = getTargets();
 details('targets')=TARGETS;
 TRIAL_SEQUENCE = getSequence(TARGETS, 1);
 details('trialSequence')=TRIAL_SEQUENCE;
@@ -21,14 +20,6 @@ FLICKER_DISPLAY = getFlickerDisplays(TARGETS, frameRate, 1, trainingSeconds ,fre
 timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY);
 details('timingData')=timingData;
 
-end
-
-
-function [targets] = getTargets()
-% each row is a frequency (11,13,15) each column is a target at that frequency
-    targets = [11;
-               21;
-               31];
 end
 
 function [FlickerDisplay] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)

@@ -1,4 +1,4 @@
-function [ details ] = frequencySwitchStimulation(  trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies)
+function [ details ] = frequencySwitchStimulation(  trialsPerFrequency, eventsPerTrial, eventLengthSeconds, frameRate, frequencies, TARGETS)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -11,7 +11,6 @@ details('trialsPerFrequency')=trialsPerFrequency;
 details('experimentType')='FREQUENCY SWITCHING STIMULATION';
 
 % precompute the display sequences
-TARGETS = getTargets();
 details('targets')=TARGETS;
 TRIAL_SEQUENCE = getSequence(TARGETS, trialsPerFrequency);
 details('trialSequence')=TRIAL_SEQUENCE;
@@ -25,13 +24,6 @@ details('timingData')=timingData;
 
 end
 
-
-function [targets] = getTargets()
-% each row is a frequency (11,13,15) each column is a target at that frequency
-    targets = [11, 12, 13;
-               21, 22, 23;
-               31, 32, 33];
-end
 function [FlickerDisplay, FlickerEvents] =  getFlickerDisplays(targets, frameRate, eventsPerTrial, eventLengthSeconds, frequencies, preTrialFlickerSeconds)
  % generates the sequence of flashes which will be used or each trial 
  % this is always the same
