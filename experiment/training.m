@@ -17,7 +17,7 @@ details('trialSequence')=TRIAL_SEQUENCE;
 HEADER_DISPLAY = getHeaderDisplays(TARGETS, frameRate,1,1);
 [FLICKER_DISPLAY,FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, 1, trainingSeconds ,frequencies, 0, @generateOneSequence);
 
-timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY, FLICKER_EVENT_MARKERS);
+timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY, FLICKER_EVENT_MARKERS, frequencies);
 details('timingData')=timingData;
 
 end

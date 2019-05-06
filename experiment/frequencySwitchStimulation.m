@@ -19,7 +19,7 @@ PRETRIAL_FLICKER_SECONDS = eventLengthSeconds;
 details('preTrialFlickerSeconds')=PRETRIAL_FLICKER_SECONDS;
 [FLICKER_DISPLAY,FLICKER_EVENT_MARKERS] = getFlickerDisplays(TARGETS, frameRate, eventsPerTrial,eventLengthSeconds ,frequencies, PRETRIAL_FLICKER_SECONDS, @generateOneSequence);
 
-timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY,FLICKER_EVENT_MARKERS);
+timingData = runProcess(TARGETS, TRIAL_SEQUENCE, HEADER_DISPLAY, FLICKER_DISPLAY,FLICKER_EVENT_MARKERS, frequencies);
 details('timingData')=timingData;
 
 end
