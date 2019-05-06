@@ -20,7 +20,7 @@ function [ timingData ] = runProcess(targets, trialSequence, headerDisplay, flic
         [allStimulators, numFrequencies, targetsPerFrequency] = screenSetup(screenRect, targets);
         
         headerPartTemp = headerDisplay(int2str(targets(1,1)));
-        headerPartLength = length(headerPartTemp(1,1,:))
+        headerPartLength = length(headerPartTemp(1,1,:));
         flickerFrames = length(flickerDisplay('11'));
 
         

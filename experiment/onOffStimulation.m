@@ -27,10 +27,8 @@ details('timingData')=timingData;
 end
 
 function [sequence, sequenceEvents] = generateOneSequence(frequency, eventOffset,framesTrial,framesPreTrial ,frameRate, eventsPerTrial, eventLengthSeconds)
-    %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
     
     totalNumFrames = framesTrial + framesPreTrial;
-    
     frames = zeros(1,totalNumFrames);
     for i = 1:totalNumFrames
         frames(i) = 1/2*(1+sin( 2 * pi * frequency * ((i-1)/frameRate) ));
@@ -45,12 +43,12 @@ function [sequence, sequenceEvents] = generateOneSequence(frequency, eventOffset
     
     for i = framesPreTrial:totalNumFrames
         periodIndex = mod(i-framesPreTrial,cyclePeriod);
-        if periodIndex >= eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
+        if periodIndex > eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
             controlMask(i) = 1; % when the control mask ==1 we are in the event (off)
         end
     end
     
-    sequence = zeros(1,totalNumFrames);
+    sequence = frames;
     sequenceEvents = zeros(1,totalNumFrames);
     for i = 2:totalNumFrames
         if controlMask(i)==1
@@ -65,7 +63,6 @@ function [sequence, sequenceEvents] = generateOneSequence(frequency, eventOffset
             sequence(i)=frames(i);
         end
     end
-    %plot(sequence);
 end
 
 

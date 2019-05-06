@@ -26,8 +26,8 @@ function [sequence, sequenceEvents] = generateOneSequence(frequency, eventOffset
     %lum = 1/2 * (1 + sin(2 * pi * frequency * time + phase));
     
     totalNumFrames = framesTrial + framesPreTrial;
-    
     frames = zeros(1,totalNumFrames);
+    
     for i = 1:totalNumFrames
         frames(i) = 1/2*(1+sin( 2 * pi * frequency * ((i-1)/frameRate) ));
     end

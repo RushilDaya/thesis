@@ -45,7 +45,7 @@ function [sequence, sequenceEvents] = generateOneSequence(frequency, eventFreque
     
     for i = framesPreTrial:totalNumFrames
         periodIndex = mod(i-framesPreTrial,cyclePeriod);
-        if periodIndex >= eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
+        if periodIndex > eventOffset_corrected*(framesPerEvent)  && periodIndex < (eventOffset_corrected+1)*(framesPerEvent)
             controlMask(i) = 1; % when the control mask ==1 we are in the event (off)
         end
     end
