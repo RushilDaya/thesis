@@ -11,7 +11,7 @@ EEG = filterBetween(EEG, data.sample_rate,4,30,4);
 
 frequencies = [11,13,15];
 
-markers15 = find(data.labels == 15);
+markers15 = find(data.labels == 11);
 markersStart = find(data.labels == 100);
 markersStop  = find(data.labels == 101);
 
@@ -32,5 +32,14 @@ for i = 1:length(markers15)
     allSegments(:,i,:)= segment;
 end
 
+single = reshape(allSegments(1,4,:),[1,20000]);
+[p,q] = rat(1100/2000);
+rsSingle = resample(single, p,q);
+
+segments = zeros(1,110);
+for i = 1:100
+    segments = segments + rsSingle( 110*(i-1)+1 : 110*i );
+end
+plot(segments)
 
 
