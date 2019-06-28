@@ -69,6 +69,7 @@ classdef dataExplorer < handle
             DE.trainingSegments = segments;
         end
         function plotFFT(DE)
+            % shows good behaviour on the fft
             channel = DE.selectedChannel;
             frequency = DE.frequency;
             sampleRate = DE.sampleRate;
@@ -88,6 +89,29 @@ classdef dataExplorer < handle
                 
             end     
             
+        end
+        
+        function plotAverages(DE, periods)
+            % shows good behavior on the averaging
+            channel = DE.selectedChannel;
+            frequency = DE.frequency;
+            sampleRate = DE.sampleRate;
+            
+            signals = DE.trainingSegments(:,channel,:);
+            numSignals = size(signals,1);
+            
+            for i = 1:numSignals
+                signal = signals(i,1,:);
+                signal = reshape(signal,[1,size(signal,3)]);
+                periodLength = round(sampleRate/frequency);
+                
+                meanSignal = zeros(1,periodLength);
+                for j = 1:periods
+                    meanSignal = meanSignal + signal((j-1)*periodLength+1:j*periodLength);
+                end
+                figure,plot(meanSignal)
+                
+            end
         end
       
         
