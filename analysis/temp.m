@@ -1,12 +1,35 @@
-function [eeg] = loadTraining(name)
-    data = loadCurryData(name,'Synamps');
-    ref_idc = ismember(data.channel_names,{'TP9','TP10'});
-    assert(numel(find(ref_idc)) == 2);
-    EEG = data.EEG - repmat(mean(data.EEG(ref_idc,:),1), size(data.EEG,1),1);
-    eeg = filterBetween(EEG, data.sample_rate,4,30,4);  
+clear;
+DE = dataExplorer('subject_1/training.dat',[11,13,15]);
+CHANNELS = 8;
+activation11 = DE.getActivationPattern(CHANNELS);
+
+beamformer = SpatiotemporalBeamformer(activation11);
+trainingSegments = DE.getTrainingEpochs(8,100);
+beamformer.calculate_weights(trainingSegments(:,:,1:100));
+
+
+y1 = [];
+for i = 1:size(trainingSegments,3)
+    
+    tempx = trainingSegments(:,:,i);
+    absTempx = tempx.^2;
+    tempx = tempx/sqrt(sum(absTempx(:)));
+    
+    t = beamformer.apply_beamforming(tempx);
+    y1 = cat(2,y1,t);
 end
 
-clear all;
-clc;
 
-rawEEG = loadTraining('../data/subject_1p/training');
+y2 = [];
+for i = 1:size(trainingSegments,3)
+    
+    tempx = trainingSegments(:,:,i);
+    tempx = flip(tempx,2);
+    absTempx = tempx.^2;
+    tempx = tempx/sqrt(sum(absTempx(:)));
+    
+    t = beamformer.apply_beamforming(tempx);
+    y2 = cat(2,y2,t);
+end
+
+plot(beamformer.weights)

@@ -113,7 +113,63 @@ classdef dataExplorer < handle
                 
             end
         end
-      
+        
+        function activationPattern = getActivationPattern(DE, numElectrodes)
+            % generate the activation patterns from the training data
+            % for the electrodes in the list provided
+            
+            sampleRate = DE.sampleRate;
+            frequency = DE.frequency;
+            periodLength = round(sampleRate/frequency);
+            
+            
+            tempMat = DE.trainingSegments(:,1:numElectrodes,:);
+            activationPattern = zeros(1,size(tempMat,2),periodLength);
+            
+            % for the activation pattern
+            % should be changed to account for cross-validation
+            
+            periods = floor( size(tempMat,3)/periodLength );
+            
+            for trail = 1:size(tempMat,1)
+                for p = 1:periods
+                    activationPattern = activationPattern + tempMat(trail,:,(p-1)*periodLength+1:p*periodLength);
+                end
+            end     
+            
+            activationPattern = reshape(activationPattern,[size(activationPattern,2),size(activationPattern,3)]);
+            % normalise the activation pattern
+            
+            activationPattern = activationPattern - mean(mean(activationPattern));
+            activationPattern = activationPattern/(sqrt( sum(sum(activationPattern.^2)) ));
+            
+        end 
+        
+        function epochs = getTrainingEpochs(DE, numElectrodes, maxPeriods)
+            
+                sampleRate = DE.sampleRate;
+                frequency = DE.frequency;
+                periodLength = round(sampleRate/frequency);
+
+
+                tempMat = DE.trainingSegments(:,1:numElectrodes,:);
+                % for the activation pattern
+                % should be changed to account for cross-validation
+
+                periods = floor( size(tempMat,3)/periodLength );
+                if periods > maxPeriods
+                    periods = maxPeriods;
+                end
+
+                epochs =[];
+                TRIAL_IDX = 1; % rather change this to use information from all trails not just one
+                for p = 1:periods
+                    segmented = tempMat(TRIAL_IDX,:,(p-1)*periodLength+1:p*periodLength);
+                    segmented = reshape(segmented, [size(segmented,2),size(segmented,3)]);
+                    epochs = cat(3, epochs, segmented);
+                end
+         
+        end
         
     end
     
