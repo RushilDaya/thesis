@@ -1,4 +1,4 @@
-classdef dataExplorer < handle
+classdef dataExplorerTraining < handle
     % data container for processing stage
     
     properties

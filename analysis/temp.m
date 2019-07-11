@@ -1,5 +1,5 @@
 clear;
-DE = dataExplorer('subject_1/training.dat',[11,13,15]);
+DE = dataExplorerTraining('subject_1/training.dat',[11,13,15]);
 CHANNELS = 8;
 activation11 = DE.getActivationPattern(CHANNELS);
 
