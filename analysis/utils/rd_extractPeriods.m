@@ -6,7 +6,7 @@ function singlePeriods = rd_extractPeriods( trials, sampleRate, frequency)
 numTrials = size(trials,3);
 trialLength = size(trials,2);
 
-periodLength = floor(sampleRate/frequency);
+periodLength = round(sampleRate/frequency);
 periodsPerTrial = floor(trialLength/periodLength);
 
 singlePeriods = [];
