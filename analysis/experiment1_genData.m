@@ -7,10 +7,10 @@ clear;
 clc;
 WRITE_TO_FILE = 'data/temp.mat';
 SUBJECTS = {'data/subject_1/','data/subject_2/','data/subject_3/','data/subject_4/'};
-PARADIGM = 'onoff'; %[onoff, frequency, phase]
+PARADIGM = 'phase'; %[onoff, frequency, phase]
 FREQUENCIES = [11,13,15];
-ELECTRODES = {'O1','Oz','O2'};
-SAMPLE_RATE = 500;
+ELECTRODES = {'O1','Oz','O2','PO7','PO3','POz','PO4','PO8'};
+SAMPLE_RATE = 1000;
 N_BACK_AVERAGE = 1;
 
 meta_info = containers.Map;

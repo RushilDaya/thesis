@@ -41,6 +41,7 @@ for subIdx = 1:length(SUBJECTS)
             [segments,labels]= rd_generateLabelled(trialsFreqSplit{bfFreqIdx},eventStarts,eventEnds,...
                 N_FEATURE_POINTS, SAMPLE_RATE,FREQUENCIES(bfFreqIdx));
             segments = reshape(segments,[size(segments,2),size(segments,3)])';
+            segments = segments - mean(segments);
             featureVector=cat(2,featureVector,segments);
         end
         labels = labels'; % bad way of generating labels
