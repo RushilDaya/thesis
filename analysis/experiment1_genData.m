@@ -10,9 +10,8 @@ SUBJECTS = {'data/subject_1/','data/subject_2/','data/subject_3/','data/subject_
 PARADIGM = 'onoff'; %[onoff, frequency, phase]
 FREQUENCIES = [11,13,15];
 ELECTRODES = {'O1','Oz','O2'};
-SAMPLE_RATE = 1000;
-N_BACK_AVERAGE = 5;
-
+SAMPLE_RATE = 500;
+N_BACK_AVERAGE = 1;
 
 meta_info = containers.Map;
 meta_info('subjects') = SUBJECTS;
@@ -62,6 +61,9 @@ for subIdx = 1:length(SUBJECTS)
     end
     subjectsBeamformedTrials{subIdx}=subjectTrials;
 end
+
+
+
 
 save(WRITE_TO_FILE, 'meta_info','subjectsBeamformedTrials');
 clear;

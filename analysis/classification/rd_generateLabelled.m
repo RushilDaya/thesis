@@ -2,7 +2,6 @@ function [ features, labels ] = rd_generateLabelled( bformedTrials, eventStarts,
    % generates labelled data around the feature point for a single signal
    % returns vectors of length featuresPerVect with labels for events /
    % non-events
-   
    eventSegments = [];
    nonEventSegments = [];
    
