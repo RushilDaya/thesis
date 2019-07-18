@@ -4,8 +4,8 @@ clc;
 
 NUM_ELECTRODES = 8; % a more extensive electrode selection should be implemented
 SAMPLE_RATE = 1000; % play with this to control number of free parameters
-SUBJECT_TRAINING_FILE = 'data/subject_1/training.dat';
-SUBJECT_EXPERIMENT_FILE = 'data/subject_1/frequency.dat';
+SUBJECT_TRAINING_FILE = 'data/subject_4/training.dat';
+SUBJECT_EXPERIMENT_FILE = 'data/subject_4/onoff.dat';
 FREQUENCIES = [11,13,15];
 FREQUENCY_OF_INTEREST = 11;
 PERIOD_AVERAGES = 5; % moving average on the beamformer - larger number should improve performance

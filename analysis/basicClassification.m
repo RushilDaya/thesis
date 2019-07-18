@@ -8,7 +8,7 @@ SUBJECT_EXPERIMENT_FILE = 'data/subject_1/phase.dat';
 FREQUENCIES = [11,13,15];
 FREQUENCY_OF_INTEREST = 11;
 PERIOD_AVERAGES = 1; % moving average on the beamformer - larger number should improve performance
-N_POINTS_FEATURES = 10; % how many points are used as features around events
+N_POINTS_FEATURES = 12; % how many points are used as features around events
 
 
 [eegTraining, labelsTraining] = rd_preProcessing(SUBJECT_TRAINING_FILE,SAMPLE_RATE,NUM_ELECTRODES);

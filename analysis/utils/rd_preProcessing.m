@@ -1,5 +1,5 @@
-function [eeg,labels] = rd_preProcessing(filePath, newSampleRate, numElectrodes )
-    
+function [eeg,labels] = rd_preProcessing(filePath, newSampleRate, electrodeSet )
+
     data = loadCurryData(filePath,'Synamps');
     ref_idc = ismember(data.channel_names,{'TP9','TP10'});
     assert(numel(find(ref_idc))==2);
@@ -11,7 +11,10 @@ function [eeg,labels] = rd_preProcessing(filePath, newSampleRate, numElectrodes 
     rawEEG = filterBetween(rawEEG, rawSampleRate, 4,30,4);
     
     % reduce the number of electrodes
-    rawEEG = rawEEG(1:numElectrodes,:);
+    selected_idc = ismember(data.channel_names,electrodeSet);
+    assert(numel(find(selected_idc))==length(electrodeSet));
+    rawEEG = rawEEG(selected_idc,:);
+   
     
     %resample the EEG signal and the labels
     rawEEG = rawEEG';
