@@ -3,12 +3,13 @@ clear;
 clc;
 
 NUM_ELECTRODES = {'O1','Oz','O2','PO7','PO3','POz','PO4','PO8'}; % a more extensive electrode selection should be implemented
-SAMPLE_RATE = 1000; % play with this to control number of free parameters
-SUBJECT_TRAINING_FILE = 'data/subject_4/training.dat';
-SUBJECT_EXPERIMENT_FILE = 'data/subject_4/onoff.dat';
+SAMPLE_RATE = 500; % play with this to control number of free parameters
+SUBJECT_TRAINING_FILE = 'data/subject_1/training.dat';
+SUBJECT_EXPERIMENT_FILE = 'data/subject_1/phase.dat';
 FREQUENCIES = [11,13,15];
-FREQUENCY_OF_INTEREST = 11;
-PERIOD_AVERAGES = 5; % moving average on the beamformer - larger number should improve performance
+FREQUENCY_OF_INTEREST = 15;
+PERIOD_AVERAGES = 1; % moving average on the beamformer - larger number should improve performance
+
 
 
 [eegTraining, labelsTraining] = rd_preProcessing(SUBJECT_TRAINING_FILE,SAMPLE_RATE,NUM_ELECTRODES);

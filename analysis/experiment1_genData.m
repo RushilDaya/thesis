@@ -10,7 +10,7 @@ SUBJECTS = {'data/subject_1/'};%,'data/subject_2/','data/subject_3/','data/subje
 PARADIGM = 'phase'; %[onoff, frequency, phase]
 FREQUENCIES = [11,13,15];
 ELECTRODES = {'O1','Oz','O2','PO7','PO3','POz','PO4','PO8'};
-SAMPLE_RATE = 1000;
+SAMPLE_RATE = 209;
 N_BACK_AVERAGE = 1;
 
 meta_info = containers.Map;

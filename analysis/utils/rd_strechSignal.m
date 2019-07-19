@@ -8,7 +8,7 @@ function strechedSignal = rd_strechSignal(signal, sampleRate,frequency, actualTi
     dataPointsPerPeriod = round(sampleRate/frequency);
     numPeriods = floor(dataPoints/dataPointsPerPeriod);
     
-    for i = 1:numPeriods
+    for i = 1:numPeriods-10
         beamFormedSection = repmat([signal(i)],[1,dataPointsPerPeriod]);
         strechedSignal((i-1)*dataPointsPerPeriod+1:i*dataPointsPerPeriod) = beamFormedSection;
     end

@@ -4,11 +4,15 @@ function beamformedSignal = rd_applyBeamformer(singleTrial,beamformer, frequency
 
     beamformedSignal =[];
     periodLength = round(sampleRate/frequency);
-    numPeriods = floor(size(singleTrial,2)/periodLength);
+    trialLength = size(singleTrial,2);
+    stimulationDuration = trialLength/sampleRate;
+    
+    numPeriods = floor(stimulationDuration*frequency);
     
     periods = [];
     for i = 1:numPeriods
-        singlePeriod = singleTrial(:, periodLength*(i-1)+1:periodLength*i);
+        singlePeriodStart = round((i-1)*(sampleRate)*(1/frequency))+1;
+        singlePeriod = singleTrial(:, singlePeriodStart:singlePeriodStart+periodLength-1);
         periods = cat(3,periods,singlePeriod);
     end
     %perform the averaging step
