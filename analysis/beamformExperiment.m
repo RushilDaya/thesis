@@ -2,7 +2,7 @@
 clear;
 clc;
 
-NUM_ELECTRODES = 8; % a more extensive electrode selection should be implemented
+NUM_ELECTRODES = {'O1','Oz','O2','PO7','PO3','POz','PO4','PO8'}; % a more extensive electrode selection should be implemented
 SAMPLE_RATE = 1000; % play with this to control number of free parameters
 SUBJECT_TRAINING_FILE = 'data/subject_4/training.dat';
 SUBJECT_EXPERIMENT_FILE = 'data/subject_4/onoff.dat';

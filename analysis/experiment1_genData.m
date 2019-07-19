@@ -6,7 +6,7 @@
 clear;
 clc;
 WRITE_TO_FILE = 'data/temp.mat';
-SUBJECTS = {'data/subject_1/','data/subject_2/','data/subject_3/','data/subject_4/'};
+SUBJECTS = {'data/subject_1/'};%,'data/subject_2/','data/subject_3/','data/subject_4/'};
 PARADIGM = 'phase'; %[onoff, frequency, phase]
 FREQUENCIES = [11,13,15];
 ELECTRODES = {'O1','Oz','O2','PO7','PO3','POz','PO4','PO8'};
@@ -66,8 +66,7 @@ end
 
 
 save(WRITE_TO_FILE, 'meta_info','subjectsBeamformedTrials');
-clear;
-clc;
+
         
 
 
