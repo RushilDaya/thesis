@@ -4,8 +4,8 @@
 clear;
 clc;
 
-DATA_ROOT = 'data/trialData/config';
-FEATURES_ROOT = 'data/trialFeatures/config';
+DATA_ROOT = 'data/trialData/subject5/config';
+FEATURES_ROOT = 'data/trialFeatures/subject5/config';
 for configIdx = 1:81
     LOAD_FILE_NAME = char(strcat(DATA_ROOT,string(configIdx),'.mat'));
     SAVE_FILE_NAME = char(strcat(FEATURES_ROOT,string(configIdx),'.mat'));
