@@ -4,8 +4,8 @@
 clear;
 clc;
 
-DATA_ROOT = 'data/trialData/subject5/config';
-FEATURES_ROOT = 'data/trialFeatures/subject5/config';
+DATA_ROOT = 'data/trialData/config';
+FEATURES_ROOT = 'data/trialFeatures/config';
 for configIdx = 1:81
     LOAD_FILE_NAME = char(strcat(DATA_ROOT,string(configIdx),'.mat'));
     SAVE_FILE_NAME = char(strcat(FEATURES_ROOT,string(configIdx),'.mat'));
@@ -47,7 +47,7 @@ for configIdx = 1:81
                 [segments,labels]= rd_generateLabelled(trialsFreqSplit{bfFreqIdx},eventStarts,eventEnds,...
                     N_FEATURE_POINTS, SAMPLE_RATE,FREQUENCIES(bfFreqIdx));
                 segments = reshape(segments,[size(segments,2),size(segments,3)])';
-                segments = segments - mean(segments);
+                segments = segments - mean(segments,2);
                 featureVector=cat(2,featureVector,segments);
             end
             labels = labels'; % bad way of generating labels

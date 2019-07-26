@@ -2,9 +2,9 @@ clear;
 clc;
 
 allResultsRows = {};
-saveFile = 'data/experiment1ResultsSubject5.mat';
-numConfigs = 81;
-FEATURE_FILE_ROOT = 'data/trialFeatures/subject5/config';
+saveFile = 'data/experiment1Results14.mat';
+numConfigs = 81
+FEATURE_FILE_ROOT = 'data/trialFeatures/config';
 
 for configIdx = 1:numConfigs
     FEATURE_FILE = char(strcat(FEATURE_FILE_ROOT,string(configIdx),'.mat'));

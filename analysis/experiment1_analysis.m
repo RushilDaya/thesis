@@ -12,9 +12,9 @@ inputData = cell2table(allResultsRows,'VariableNames',{'electrodes','averagePeri
 % first compute the averages across frequency and subject 
 electrodes = [10];
 sampleRates = [256];
-paradigms = {'onoff','phase','frequency'};
-averagePeriods = [5];
-numFeatures = [12];
+paradigms = {'onoff'};
+averagePeriods = [1,3,5];
+numFeatures = [4,8,12];
 
 summary = {};
 for paradigmIdx = 1:length(paradigms)
@@ -63,21 +63,87 @@ byAveragePeriod = grpstats(summary,{'averagePeriod'},{'min','max','mean','std'},
 byNumFeatures = grpstats(summary,{'numFeatures'},{'min','max','mean','std'},'DataVars',{'qsvmAcc','lsvmAcc','ldaAcc','qdaAcc'})
 
 
-% visually lets take the parameters which seemingly provide the best
-% performance
-PARADIGM = 'phase';
-ELECTRODES = 10 ;
-SAMPLE_RATE = 512;
-AVERAGE_PERIOD = 1;
-NUM_FEATURES = 12;
+zz_data = inputData(strcmp(inputData.paradigm,'onoff')&...
+       inputData.electrodes == 10 & inputData.sampleRate == 256,: );
+
+grpstats(zz_data,{'averagePeriod'},{'mean','median'},'DataVars',{'lsvmAcc','qsvmAcc','ldaAcc','qdaAcc'})
 
 
-best = inputData;
-best = best(strcmp(best.paradigm, PARADIGM),:);
-best = best(best.averagePeriod == AVERAGE_PERIOD,:);
-best = best(best.electrodes == ELECTRODES,:);
-best = best(best.sampleRate == SAMPLE_RATE,:);
-best = best(best.numFeatures == NUM_FEATURES,:);
+% to draw the data as a function of average period (across feature sizes)
+temp = inputData(strcmp(inputData.paradigm,'onoff')&...
+       inputData.electrodes == 10 & inputData.sampleRate == 256,: );
+   
+tempCol1 = temp(temp.averagePeriod == 1,:);
+tempCol2 = temp(temp.averagePeriod == 3,:);
+tempCol3 = temp(temp.averagePeriod == 5,:);
 
-bestBySubject = grpstats(best,{'subject'},{'min','max','mean','std'},'DataVars',{'qsvmAcc','lsvmAcc','ldaAcc','qdaAcc'})
-bestByFrequency = grpstats(best,{'frequency'},{'min','max','mean','std'},'DataVars',{'qsvmAcc','lsvmAcc','ldaAcc','qdaAcc'})
+allTemps = cell({tempCol1,tempCol2,tempCol3});
+allTempsClassifiers = [];
+for i = 1:3
+    aa = allTemps{i};
+    bb = [aa.lsvmAcc, aa.qsvmAcc, aa.ldaAcc, aa.qdaAcc];
+    bb = reshape(bb,[45,1,4]);
+    allTempsClassifiers = cat(2,allTempsClassifiers,bb);
+end
+
+boxData = allTempsClassifiers;
+colors = {[1 .0 .0],[.0 .0 1],[.1 0.8 .1],[.4 .3 0.6]};
+legend_text = {'lsvm','qsvm','lda','qda'};
+xlabels = {'1','3','5'}; 
+figure,rd_makeBoxPlots(boxData, colors, xlabels, legend_text )
+xlabel('moving average window size');
+ylabel('classifier accuracy');
+
+
+% to draw the data as a function of feature sizes ( across average period)
+% temp = inputData(strcmp(inputData.paradigm,'onoff')&...
+%        inputData.electrodes == 10 & inputData.sampleRate == 256,: );
+%    
+% tempCol1 = temp(temp.numFeatures == 4,:);
+% tempCol2 = temp(temp.numFeatures == 8,:);
+% tempCol3 = temp(temp.numFeatures == 12,:);
+% 
+% allTemps = cell({tempCol1,tempCol2,tempCol3});
+% allTempsClassifiers = [];
+% for i = 1:3
+%     aa = allTemps{i};
+%     bb = [aa.lsvmAcc, aa.qsvmAcc, aa.ldaAcc, aa.qdaAcc];
+%     bb = reshape(bb,[45,1,4]);
+%     allTempsClassifiers = cat(2,allTempsClassifiers,bb);
+% end
+% 
+% boxData = allTempsClassifiers;
+% colors = {[1 .0 .0],[.0 .0 1],[.1 0.8 .1],[.4 .3 0.6]};
+% legend_text = {'lsvm','qsvm','lda','qda'};
+% xlabels = {'4','8','12'}; 
+% figure, rd_makeBoxPlots(boxData, colors, xlabels, legend_text );
+% xlabel('Feature vector size');
+% ylabel('classifier accuracy');
+
+
+
+
+
+
+
+
+%makeBoxPlots(byNumFeaturesPlotable,colors,xlabels,legent_text)
+
+% % visually lets take the parameters which seemingly provide the best
+% % performance
+% PARADIGM = 'phase';
+% ELECTRODES = 10 ;
+% SAMPLE_RATE = 256;
+% AVERAGE_PERIOD = 5;
+% NUM_FEATURES = 12;
+% 
+% 
+% best = inputData;
+% best = best(strcmp(best.paradigm, PARADIGM),:);
+% best = best(best.averagePeriod == AVERAGE_PERIOD,:);
+% best = best(best.electrodes == ELECTRODES,:);
+% best = best(best.sampleRate == SAMPLE_RATE,:);
+% best = best(best.numFeatures == NUM_FEATURES,:);
+% 
+% bestBySubject = grpstats(best,{'subject'},{'min','max','mean','std'},'DataVars',{'qsvmAcc','lsvmAcc','ldaAcc','qdaAcc'})
+% bestByFrequency = grpstats(best,{'frequency'},{'min','max','mean','std'},'DataVars',{'qsvmAcc','lsvmAcc','ldaAcc','qdaAcc'})
