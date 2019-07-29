@@ -4,11 +4,11 @@ clc;
 
 NUM_ELECTRODES = {'O1','Oz','O2','PO3','PO4','Pz','P3','P4','Cz','Fz'}; % a more extensive electrode selection should be implemented
 SAMPLE_RATE = 256; % play with this to control number of free parameters
-SUBJECT_TRAINING_FILE = 'data/subject_3/training.dat';
-SUBJECT_EXPERIMENT_FILE = 'data/subject_3/phase.dat';
+SUBJECT_TRAINING_FILE = 'data/subject_1/training.dat';
+SUBJECT_EXPERIMENT_FILE = 'data/subject_1/frequency.dat';
 FREQUENCIES = [11,13,15];
 FREQUENCY_OF_INTEREST = 13;
-PERIOD_AVERAGES = 1; % moving average on the beamformer - larger number should improve performance
+PERIOD_AVERAGES = 5; % moving average on the beamformer - larger number should improve performance
 
 
 
@@ -35,7 +35,7 @@ for trialIdx = 1:size(trialAtFrequency,3)
     for freqIdx = 1:size(FREQUENCIES,2)
         beamformedTrial = rd_applyBeamformer(trialAtFrequency(:,:,trialIdx),beamformers{freqIdx},FREQUENCIES(freqIdx),SAMPLE_RATE,PERIOD_AVERAGES);
         beamformedTrial = rd_strechSignal(beamformedTrial,SAMPLE_RATE,FREQUENCIES(freqIdx),signalTimeActual);
-        plot(horizontal_axes,beamformedTrial,'LineWidth',1.5);
+        plot(horizontal_axes,beamformedTrial,'LineWidth',1.1);
         hold on;
     end
     legend('11 Hz','13 Hz','15 Hz');

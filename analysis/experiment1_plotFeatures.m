@@ -2,10 +2,10 @@
 % would be good to look at it for different amounts of averaging.
 
 % define the parameters indices (look at experiment1_genData.m) we are looking for
-paradigmIdx = 1;
+paradigmIdx = 3;
 subject = 3;
 sampleRateIdx = 1;
-frequencyIdx = 2;
+frequencyIdx = 1;
 averagingPeriodIdx = 3;
 electrodesIdx = 3;
 
