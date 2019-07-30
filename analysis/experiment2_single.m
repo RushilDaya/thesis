@@ -1,4 +1,4 @@
-SUBJECT = 3;
+SUBJECT = 1;
 PARADIGM = 'onoff';
 SAMPLE_RATE = 256;
 ELECTRODES = {'O1','Oz','O2','PO3','PO4','Pz','P3','P4','Cz','Fz'};
@@ -25,11 +25,13 @@ clear beamformedTrials
 
 for cvIdx = 1:length(cv_sets)
     beamformedTrials = cv_sets{cvIdx};
-    
     % train the classifier
     dataSegments = ex2_getLabelled(beamformedTrials, FREQUENCIES, FEATURE_VECTOR_SIZE, SAMPLE_RATE);
     % datasegments has 3 cells ( one for each frequency)
     classifiers = ex2_trainClassifiers(dataSegments);
+    
+    ex2_test(classifiers,beamformedTrials);
+    
 end
 
 
