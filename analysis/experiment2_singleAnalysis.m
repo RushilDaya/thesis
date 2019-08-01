@@ -2,7 +2,7 @@ clear;
 clc;
 load('data/experiment2temp.mat')
 
-THRESHOLD_POINTS = 50;
+THRESHOLD_POINTS = 100;
 
 
 for cvIdx = 1:length(allClassificationData)
@@ -14,13 +14,13 @@ for cvIdx = 1:length(allClassificationData)
     % as we can have a separate classifier for each frequency
     
     for freqIdx = 1:length(trainingPart)
-        [minScore,maxScore]=ex2_getMinMaxScore(trainingPart{freqIdx});
+        [minScore,maxScore]=ex2_getMinMaxScore(testPart{freqIdx});
         tryThresholds = linspace(minScore,maxScore,THRESHOLD_POINTS);
         
         allMetrics = {};
         for threshIdx = 1:THRESHOLD_POINTS
             threshold = tryThresholds(threshIdx);
-            extendedTrials = ex2_binariseEvents(trainingPart{freqIdx},threshold);
+            extendedTrials = ex2_binariseEvents(testPart{freqIdx},threshold);
             metrics = ex2_computeMetrics(extendedTrials);
             allMetrics{threshIdx} = metrics;
         end
@@ -35,15 +35,24 @@ for cvIdx = 1:length(allClassificationData)
             recallCurve = [recallCurve, recall];
         end
         
-        % for visual purposes it doesn't make sense to consider points
-        % after maximum recall
-        bestRecall = max(recallCurve);
-        bestRecallIdx = find(recallCurve == bestRecall);
-        recallCurve(1:bestRecallIdx) = bestRecall;
+        
+        % make recall adjustment ( obtain a more hull like characteristic
+        recallModified = flip(recallCurve);
+        for  i = 2:length(recallModified)
+            if recallModified(i) < recallModified(i-1)
+                recallModified(i) = recallModified(i-1);
+            end     
+        end
+        recallCurve = flip(recallModified);
+        
         
         plotableThreshold = tryThresholds-min(tryThresholds);
         plotableThreshold = plotableThreshold/max(plotableThreshold);
         
+        
+        % a pseudo area under curve calculation
+        precisionCurve(isnan(precisionCurve))=1;
+        areaUnderCurve = -1*trapz(recallCurve,precisionCurve)
         
         
         figure,plot(recallCurve,precisionCurve,'LineWidth',1.8);

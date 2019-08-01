@@ -2,7 +2,7 @@ clear;
 clc;
 load('data/experiment2temp.mat')
 
-THRESHOLD_POINTS = 50;
+THRESHOLD_POINTS = 100;
 
 
 for cvIdx = 1:length(allClassificationData)
@@ -14,13 +14,13 @@ for cvIdx = 1:length(allClassificationData)
     % as we can have a separate classifier for each frequency
     
     for freqIdx = 1:length(trainingPart)
-        [minScore,maxScore]=ex2_getMinMaxScore(trainingPart{freqIdx});
+        [minScore,maxScore]=ex2_getMinMaxScore(testPart{freqIdx});
         tryThresholds = linspace(minScore,maxScore,THRESHOLD_POINTS);
         
         allMetrics = {};
         for threshIdx = 1:THRESHOLD_POINTS
             threshold = tryThresholds(threshIdx);
-            extendedTrials = ex2_binariseEvents(trainingPart{freqIdx},threshold);
+            extendedTrials = ex2_binariseEvents(testPart{freqIdx},threshold);
             metrics = ex2_computeMetrics(extendedTrials);
             allMetrics{threshIdx} = metrics;
         end
@@ -41,12 +41,29 @@ for cvIdx = 1:length(allClassificationData)
         bestRecallIdx = find(recallCurve == bestRecall);
         recallCurve(1:bestRecallIdx) = bestRecall;
         
-        plotableThreshold = tryThreshold
+        % make recall adjustment ( obtain a more hull like characteristic
+        recallModified = flip(recallCurve);
+        for  i = 2:length(recallModified)
+            if 
+        end
         
-        figure,plot(recallCurve,precisionCurve);
-        hold on;
-        plot(recallCurve,tryThresholds);
+        
+        plotableThreshold = tryThresholds-min(tryThresholds);
+        plotableThreshold = plotableThreshold/max(plotableThreshold);
+        
+        
+        % a pseudo area under curve calculation
+        precisionCurve(isnan(precisionCurve))=1;
+        areaUnderCurve = -1*trapz(recallCurve,precisionCurve)
+        
+        
+        figure,plot(recallCurve,precisionCurve,'LineWidth',1.8);
         xlim([0,1]),ylim([0,1]);
+        hold on;
+        yyaxis right;
+        plot(recallCurve,tryThresholds,'--');
+        ylim([-4,4]);
+        
         
     end
     
