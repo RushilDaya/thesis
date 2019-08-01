@@ -41,18 +41,12 @@ for cvIdx = 1:length(allClassificationData)
         bestRecallIdx = find(recallCurve == bestRecall);
         recallCurve(1:bestRecallIdx) = bestRecall;
         
-        plotableThreshold = tryThresholds-min(tryThresholds);
-        plotableThreshold = plotableThreshold/max(plotableThreshold);
+        plotableThreshold = tryThreshold
         
-        
-        
-        figure,plot(recallCurve,precisionCurve,'LineWidth',1.8);
-        xlim([0,1]),ylim([0,1]);
+        figure,plot(recallCurve,precisionCurve);
         hold on;
-        yyaxis right;
-        plot(recallCurve,tryThresholds,'--');
-        ylim([-4,4]);
-        
+        plot(recallCurve,tryThresholds);
+        xlim([0,1]),ylim([0,1]);
         
     end
     
