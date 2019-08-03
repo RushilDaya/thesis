@@ -7,6 +7,9 @@ FEATURE_VECTOR_SIZE = 12;
 FREQUENCIES = [11,13,15];
 CV_FOLDS = 5;
 
+subjects = [3];
+paradigms = {'onoff'};
+
 
 superStructure = {};
 for paradigmIdx = 1:length(paradigms)
@@ -51,14 +54,14 @@ for paradigmIdx = 1:length(paradigms)
 
             allClassificationData{cvIdx} = foldObj;
 
-        %    performanceResultsFreqKnown = ex2_performanceResults(onlineClassificationsFreqKnown);
-        %     for ii = 1:length(classificationsTraining)
-        %         pp = classificationsTraining{ii};
-        %         for jj = 1:length(pp)
-        %             aa = pp{jj};
-        %             figure, plot(aa('predictions')),hold on, plot(aa('events')),plot(aa('input'))
-        %         end
-        %     end
+            
+%             for ii = 1:length(classificationsTest)
+%                 pp = classificationsTest{ii};
+%                 for jj = 1:length(pp)
+%                     aa = pp{jj};
+%                     figure, plot(aa('predictions')),hold on, plot(aa('events')),plot(aa('input'))
+%                 end
+%             end
         end
         paradigmStructure{subjectIdx} = allClassificationData;
         
@@ -66,7 +69,7 @@ for paradigmIdx = 1:length(paradigms)
     superStructure{paradigmIdx} = paradigmStructure;
 end
 
-save('data/experiment2allKnownFreq.mat','superStructure');
+save('data/experiment2allKnownFreqFAKE.mat','superStructure');
 
 
 

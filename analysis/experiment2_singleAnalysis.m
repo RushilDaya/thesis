@@ -14,7 +14,8 @@ for cvIdx = 1:length(allClassificationData)
     % as we can have a separate classifier for each frequency
     
     for freqIdx = 1:length(trainingPart)
-        [minScore,maxScore]=ex2_getMinMaxScore(testPart{freqIdx});
+        minScore = -10;
+        maxScore = 20; % from empirical results
         tryThresholds = linspace(minScore,maxScore,THRESHOLD_POINTS);
         
         allMetrics = {};
@@ -56,11 +57,11 @@ for cvIdx = 1:length(allClassificationData)
         
         
         figure,plot(recallCurve,precisionCurve,'LineWidth',1.8);
-        xlim([0,1]),ylim([0,1]);
+        %xlim([0,1]),ylim([0,1]);
         hold on;
         yyaxis right;
         plot(recallCurve,tryThresholds,'--');
-        ylim([-4,4]);
+        %ylim([-4,4]);
         
         
     end
