@@ -55,13 +55,16 @@ for paradigmIdx = 1:length(paradigms)
             allClassificationData{cvIdx} = foldObj;
 
             
-%             for ii = 1:length(classificationsTest)
-%                 pp = classificationsTest{ii};
-%                 for jj = 1:length(pp)
-%                     aa = pp{jj};
-%                     figure, plot(aa('predictions')),hold on, plot(aa('events')),plot(aa('input'))
-%                 end
-%             end
+            for ii = 1:length(classificationsTest)
+                pp = classificationsTest{ii};
+                for jj = 1:length(pp)
+                    aa = pp{jj};
+                    figure, plot(aa('predictions'),'LineWidth',2);
+                    figure, plot(aa('events'),'LineWidth',2);
+                    figure, plot(aa('input'),'LineWidth',2);
+                end
+            end
+            
         end
         paradigmStructure{subjectIdx} = allClassificationData;
         

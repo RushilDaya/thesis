@@ -1,7 +1,6 @@
 function extendedTrials = ex2_binariseEvents( trials, threshold )
 % to each trial add a key value pair which contains the 'thresholded'
 % events
-
 extendedTrials = {};
 for trIdx = 1:length(trials)
     trial = trials{trIdx};

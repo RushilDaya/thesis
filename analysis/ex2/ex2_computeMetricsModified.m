@@ -1,4 +1,4 @@
-function metrics = ex2_computeMetricsModified( extendedTrials )
+function metrics = ex2_computeMetricsModified( extendedTrials, expectedPositives )
     
     LAG_WINDOW =10; % may need a better way to tune this
 
@@ -29,27 +29,33 @@ function metrics = ex2_computeMetricsModified( extendedTrials )
         for i = LAG_WINDOW+1:length(predictions)
             if predictions(i) == 1
                 if ismember(1,actual(i-LAG_WINDOW:i))
-                    tp = tp +1;
+                    if ismember(1,predictions(i-LAG_WINDOW:i-1))
+                        fp = fp +1;
+                    else
+                        tp = tp +1;
+                    end
                 else
                     fp = fp +1;
                 end
             end
         end
         % last we need to look at the false negatives (missed events)
-        for i = 1:length(predictions)-LAG_WINDOW
-            if actual(i) == 1
-                if ismember(1,predictions(i:i+LAG_WINDOW))
-                    1;
-                else
-                    fn = fn + 1;
-                end
-            end
-        end
+%         for i = 1:length(predictions)-LAG_WINDOW
+%             if actual(i) == 1
+%                 if ismember(1,predictions(i:i+LAG_WINDOW))
+%                     1;
+%                 else
+%                     fn = fn + 1;
+%                 end
+%             end
+%         end
+        
+        
         metrics('truePositives')= metrics('truePositives')+tp;
         metrics('falsePositives')= metrics('falsePositives')+fp;
-        metrics('falseNegatives')= metrics('falseNegatives')+fn;
         metrics('trueNegatives')= metrics('trueNegatives')+tn;
         
     end
+    metrics('falseNegatives')= expectedPositives - metrics('truePositives');
     
 end

@@ -1,35 +1,36 @@
-clear;
-DE = dataExplorerTraining('subject_1/training.dat',[11,13,15]);
-CHANNELS = 8;
-activation11 = DE.getActivationPattern(CHANNELS);
+clear
+clc
 
-beamformer = SpatiotemporalBeamformer(activation11);
-trainingSegments = DE.getTrainingEpochs(8,100);
-beamformer.calculate_weights(trainingSegments(:,:,1:100));
+load('data/experiment2_knownFreq_modifiedCase.mat');
 
-
-y1 = [];
-for i = 1:size(trainingSegments,3)
-    
-    tempx = trainingSegments(:,:,i);
-    absTempx = tempx.^2;
-    tempx = tempx/sqrt(sum(absTempx(:)));
-    
-    t = beamformer.apply_beamforming(tempx);
-    y1 = cat(2,y1,t);
+% lets for a certain paradigm look at the effect of frequency distribution
+% across subject
+subset = tabular(strcmp(tabular.paradigm,'frequency'),:);
+[1 .0 .0]
+frequencies = [11,13,15];
+boxData = [];
+for freqIdx = 1:3
+    frequency = frequencies(freqIdx);
+    tempData = subset(subset.frequency == frequency,:);
+    allSubjects = []
+    for subject = 1:5
+        subjectData = tempData(tempData.subject == subject,:);
+        column = subjectData.threshBest;
+        allSubjects = cat(2,allSubjects,column);
+    end
+    boxData = cat(3,boxData,allSubjects);
 end
 
+% colors = {[1 .0 .0],[.0 .0 1],[.1 0.8 .1]};
+% legend_text = {'11 Hz','13 Hz','15 Hz',};
+% xlabels = {'1','2','3','4','5'}; 
+% figure, rd_makeBoxPlots(boxData, colors, xlabels, legend_text );
+% xlabel('subjects');
+% ylabel('best Threshold');
 
-y2 = [];
-for i = 1:size(trainingSegments,3)
-    
-    tempx = trainingSegments(:,:,i);
-    tempx = flip(tempx,2);
-    absTempx = tempx.^2;
-    tempx = tempx/sqrt(sum(absTempx(:)));
-    
-    t = beamformer.apply_beamforming(tempx);
-    y2 = cat(2,y2,t);
-end
 
-plot(beamformer.weights)
+subject = 5;
+%ranksum(boxData(:,subject,1),boxData(:,subject,2))
+ranksum(boxData(:,subject,1),boxData(:,subject,3))
+%ranksum(boxData(:,subject,2),boxData(:,subject,3))
+
