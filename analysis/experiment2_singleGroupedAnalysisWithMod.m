@@ -30,7 +30,7 @@ for paradigmIdx = 1:length(paradigms)
                     extendedTrials = ex2_binariseEventsModified(testPart{freqIdx},threshold);
                     % we use the extended trials to compute a graph of lag
                     % times
-                    metrics = ex2_computeMetricsModified(extendedTrials);
+                    metrics = ex2_computeMetricsModified(extendedTrials,10);
                     allMetrics{threshIdx} = metrics;
                 end
 

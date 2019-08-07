@@ -26,11 +26,12 @@ end
 % xlabels = {'1','2','3','4','5'}; 
 % figure, rd_makeBoxPlots(boxData, colors, xlabels, legend_text );
 % xlabel('subjects');
-% ylabel('best Threshold');
+% ylabel('best f1 score');
 
-
-subject = 5;
+for subject = 1:5
+subject
 %ranksum(boxData(:,subject,1),boxData(:,subject,2))
 ranksum(boxData(:,subject,1),boxData(:,subject,3))
 %ranksum(boxData(:,subject,2),boxData(:,subject,3))
+end
 
